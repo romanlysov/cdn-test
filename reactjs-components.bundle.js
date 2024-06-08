@@ -6869,7 +6869,7 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
       style: buttonStyle
     }, "About"), /*#__PURE__*/React.createElement("button", {
       style: buttonStyle
-    }, "Help")));
+    }, "Test")));
   };
 
   function styleInject(css, ref) {
@@ -6913,12 +6913,13 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
     height: '48px',
     lineHeight: '26px',
     color: '#4a4a4a',
-    width: '300px',
     borderRadius: '50px',
-    marginRight: '500px',
     fontSize: '16px',
     fontWeight: '600',
-    padding: '0 16px'
+    padding: '0 16px',
+    flex: '1',
+    minWidth: '100px',
+    maxWidth: '300px'
   };
   const wrapperStyle = {
     display: 'flex',
@@ -6930,30 +6931,104 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
     fontSize: '16px',
     fontWeight: '600',
     color: 'black',
-    marginRight: 'auto'
+    minWidth: '200px'
   };
   const rowStyle = {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    height: '78px'
+    justifyContent: 'flex-start',
+    height: '78px',
+    flexWrap: 'wrap'
   };
   const datePickerStyle = {
     border: '1px solid rgb(59, 159, 226)',
     height: '48px',
     lineHeight: '26px',
     color: '#4a4a4a',
-    width: '300px',
+    minWidth: '100px',
     borderRadius: '50px',
-    marginRight: '500px',
+    maxWidth: '300px',
     fontSize: '16px',
     fontWeight: '600',
-    padding: '0 16px'
+    padding: '0 16px',
+    flex: '1'
   };
   const heading2Style = {
     fontSize: '14px',
     color: 'rgb(155, 155, 155)',
     margin: '16px 0 16px 44px'
+  };
+  const BASE_URL = 'https://api-gateway-tst.integration.shd.eu-int-aholddelhaize.com/ah/stores/btw-service';
+  const ENDPOINTS = {
+    customers: '/customers',
+    customerTransactions: '/customer-transactions'
+  };
+  const customersMock = [{
+    id: '123456L',
+    companyName: 'First Company',
+    vatNumber: 'PEsskfitti',
+    //optional
+
+    email: 'comany@email.com',
+    //optional
+
+    address: 'Provinsaag 15',
+    //optional
+
+    postalCode: '123456',
+    //optional
+
+    location: 'Zaandam',
+    //optional
+
+    country: 'NL'
+  }, {
+    id: '123456L',
+    companyName: 'Second Company',
+    vatNumber: 'PEsskfitti',
+    //optional
+
+    email: 'comany@email.com',
+    //optional
+
+    address: 'Provinsaag 15',
+    //optional
+
+    postalCode: '123456',
+    //optional
+
+    location: 'Zaandam',
+    //optional
+
+    country: 'NL'
+  }];
+  const transactionMock = {
+    id: 'xcx21rfsd',
+    storeId: '1003',
+    date: '2024-03-13',
+    workstationId: 2,
+    transactionNumber: 4,
+    transactionAmount: 123.3,
+    customer: {
+      id: '123456L',
+      companyName: 'First Company',
+      vatNumber: 'PEsskfitti',
+      //optional
+
+      email: 'comany@email.com',
+      //optional
+
+      address: 'Provinsaag 15',
+      //optional
+
+      postalCode: '123456',
+      //optional
+
+      location: 'Zaandam',
+      //optional
+
+      country: 'NL'
+    }
   };
   const BTWfactuur = ({
     value
@@ -6963,12 +7038,38 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
     const [transactienummer, setTransactienummer] = React$1.useState('');
     const [transactiewaarde, setTransactiewaarde] = React$1.useState('');
     const [vasteKlant, setVasteKlant] = React$1.useState('');
+    const [companyName, setCompanyName] = React$1.useState('');
+    const [btwNummer, setBtwNummer] = React$1.useState('');
+    const [email, setEmail] = React$1.useState('');
+    const [address, setAddress] = React$1.useState('');
+    const [postalCode, setPostalCode] = React$1.useState('');
+    const [location, setLocation] = React$1.useState('');
+    const [country, setCountry] = React$1.useState('');
     const [isDataFieldsShown, setIsDataFieldsShown] = React$1.useState(false);
     const [isLoading, setIsLoading] = React$1.useState(false);
+    const [allCustomers, setAllCustomers] = React$1.useState([{}]);
+    const [suggestions, setSuggestions] = React$1.useState([]);
+    const [suggestionsShown, setSuggestionsShown] = React$1.useState(false);
+    const setFormValues = customer => {
+      setCompanyName(customer.companyName);
+      setBtwNummer(customer.vatNumber);
+      setEmail(customer.email);
+      setAddress(customer.address);
+      setPostalCode(customer.postalCode);
+      setLocation(customer.location);
+      setCountry(customer.country);
+    };
+    const handleVasteKlant = e => {
+      setSuggestionsShown(true);
+      const input = e.target.value;
+      setVasteKlant(input);
+      const suggestions = allCustomers.filter(customer => customer.companyName.toLowerCase().includes(input.toLowerCase()));
+      setSuggestions(suggestions);
+    };
     const handleKassaBonDatum = e => {
       setKassaBonDatum(e.target.value);
-      document.getElementById('InputForJS').value = e.target.value; // set the value
-      document.getElementById('InputForJS').dispatchEvent(new Event('change')); // dispatch the change event
+      document.getElementById('InputForJS').value = e.target.value;
+      document.getElementById('InputForJS').dispatchEvent(new Event('change'));
     };
     const handleKassanummer = e => {
       setKassanummer(e.target.value);
@@ -6976,26 +7077,80 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
     const handleTransactienummer = e => {
       setTransactienummer(e.target.value);
     };
-    const showLoader = () => {
-      return new Promise(resolve => {
-        setIsLoading(true);
-        setTimeout(() => {
-          setIsLoading(false);
-          resolve();
-        }, 2000);
-      });
+    const getAllCustomers = async () => {
+      try {
+        const url = `${BASE_URL}${ENDPOINTS.customers}`;
+        const params = new URLSearchParams({
+          storeId: value !== undefined ? value : '4003'
+        });
+        const response = await fetch(`${url}?${params}`);
+        const result = await response.json();
+        console.log(result);
+        setAllCustomers(result);
+      } catch (error) {
+        console.error(error);
+        setAllCustomers(customersMock);
+      }
     };
+    const getCustomerTransaction = async () => {
+      try {
+        const url = `${BASE_URL}${ENDPOINTS.customerTransactions}`;
+        const params = new URLSearchParams({
+          storeId: value !== undefined ? value : '4003',
+          date: kassaBonDatum,
+          workstationId: kassanummer,
+          transactionNumber: transactienummer
+        });
+        const response = await fetch(`${url}?${params}`);
+        const result = await response.json();
+        setTransactiewaarde(`€ ${result.transactionAmount}`);
+        setIsDataFieldsShown(true);
+        setFormValues(transactionMock.customer);
+        console.log(result);
+        return result;
+      } catch (error) {
+        console.error(error);
+        setTransactiewaarde(`€ ${result.transactionAmount}`);
+        setIsDataFieldsShown(true);
+        setFormValues(transactionMock.customer);
+        return transactionMock;
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    const wrapperRef = React$1.useRef(null);
+    const handleSuggestionClick = suggestion => () => {
+      setIsDataFieldsShown(true);
+      setVasteKlant(suggestion.companyName);
+      setSuggestionsShown(false);
+      setFormValues(suggestion);
+    };
+    React$1.useEffect(() => {
+      function handleClickOutside(event) {
+        if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+          setSuggestionsShown(false);
+        }
+      }
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, [wrapperRef]);
     React$1.useEffect(() => {
       if (kassanummer && transactienummer && kassaBonDatum) {
         setIsLoading(true);
-        setTimeout(() => {
-          showLoader();
-          setIsDataFieldsShown(true);
-          setTransactiewaarde('€ 100,00');
-          setIsLoading(false);
-        }, 2000);
+        getCustomerTransaction();
+        // setTimeout(() => {
+        //   showLoader();
+        //   setIsDataFieldsShown(true);
+        //   setTransactiewaarde('€ 100,00');
+        //   setIsLoading(false);
+        // }, 2000);
       }
     }, [kassanummer, transactienummer, kassaBonDatum]);
+    React$1.useEffect(() => {
+      getAllCustomers();
+    }, []);
     return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       style: {
         width: '100%',
@@ -7007,7 +7162,7 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
         margin: '44px',
         height: '100%'
       }
-    }, /*#__PURE__*/React.createElement("h1", null, "BTW factuur aanmaken"), /*#__PURE__*/React.createElement("h2", {
+    }, /*#__PURE__*/React.createElement("h1", null, "BTW DEMO factuur aanmaken"), /*#__PURE__*/React.createElement("h2", {
       style: heading2Style
     }, "TRANSACTIEGEGEVENS"), /*#__PURE__*/React.createElement("div", {
       style: wrapperStyle
@@ -7055,56 +7210,93 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
       style: rowStyle
     }, /*#__PURE__*/React.createElement("p", {
       style: labelStyle
-    }, "Vaste klant"), /*#__PURE__*/React.createElement("input", {
-      style: inputStyle,
+    }, "Vaste klant"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        flex: '1',
+        minWidth: '100px',
+        maxWidth: '300px'
+      }
+    }, /*#__PURE__*/React.createElement("input", {
+      style: {
+        ...inputStyle,
+        width: '100%'
+      },
       value: vasteKlant,
-      disabled: true
-    })), isDataFieldsShown && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+      onChange: handleVasteKlant
+    }), /*#__PURE__*/React.createElement("div", {
+      ref: wrapperRef
+    }, suggestionsShown && /*#__PURE__*/React.createElement("div", {
+      style: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        border: '1px solid #000',
+        width: '300px',
+        maxHeight: '100px',
+        overflow: 'auto'
+      }
+    }, suggestions.map(suggestion => /*#__PURE__*/React.createElement("p", {
+      style: {
+        padding: '8px',
+        margin: '0',
+        cursor: 'pointer'
+      },
+      onClick: handleSuggestionClick(suggestion)
+    }, suggestion.companyName)))))), isDataFieldsShown && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
       style: rowStyle
     }, /*#__PURE__*/React.createElement("p", {
       style: labelStyle
     }, "Bedrijfsnaam"), /*#__PURE__*/React.createElement("input", {
-      style: inputStyle
+      style: inputStyle,
+      value: companyName,
+      disabled: true
     })), /*#__PURE__*/React.createElement("div", {
       style: rowStyle
     }, /*#__PURE__*/React.createElement("p", {
       style: labelStyle
     }, "BTW-nummer"), /*#__PURE__*/React.createElement("input", {
-      style: inputStyle
+      style: inputStyle,
+      value: btwNummer,
+      onChange: e => setBtwNummer(e.target.value)
     })), /*#__PURE__*/React.createElement("div", {
       style: rowStyle
     }, /*#__PURE__*/React.createElement("p", {
       style: labelStyle
-    }, "E-mailadres"), ' ', /*#__PURE__*/React.createElement("p", {
-      style: {
-        marginRight: 'auto'
-      }
-    }, "Optioneel"), /*#__PURE__*/React.createElement("input", {
-      style: inputStyle
+    }, "E-mailadres"), ' ', /*#__PURE__*/React.createElement("input", {
+      style: inputStyle,
+      value: email,
+      onChange: e => setEmail(e.target.value)
     })), /*#__PURE__*/React.createElement("div", {
       style: rowStyle
     }, /*#__PURE__*/React.createElement("p", {
       style: labelStyle
     }, "Adres"), /*#__PURE__*/React.createElement("input", {
-      style: inputStyle
+      style: inputStyle,
+      value: address,
+      onChange: e => e.target.value
     })), /*#__PURE__*/React.createElement("div", {
       style: rowStyle
     }, /*#__PURE__*/React.createElement("p", {
       style: labelStyle
     }, "Postcode"), /*#__PURE__*/React.createElement("input", {
-      style: inputStyle
+      style: inputStyle,
+      value: postalCode,
+      onChange: e => e.target.value
     })), /*#__PURE__*/React.createElement("div", {
       style: rowStyle
     }, /*#__PURE__*/React.createElement("p", {
       style: labelStyle
     }, "Plaats"), /*#__PURE__*/React.createElement("input", {
-      style: inputStyle
+      style: inputStyle,
+      value: location,
+      onChange: e => setLocation(e.target.value)
     })), /*#__PURE__*/React.createElement("div", {
       style: rowStyle
     }, /*#__PURE__*/React.createElement("p", {
       style: labelStyle
     }, "Land"), /*#__PURE__*/React.createElement("input", {
-      style: inputStyle
+      style: inputStyle,
+      value: country,
+      onChange: e => e.target.value
     }))), /*#__PURE__*/React.createElement("div", {
       style: rowStyle
     }, /*#__PURE__*/React.createElement("p", {
