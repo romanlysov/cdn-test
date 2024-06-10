@@ -7077,7 +7077,7 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
     const handleTransactienummer = e => {
       setTransactienummer(e.target.value);
     };
-    const getAllCustomers = async () => {
+    const getAllCustomers = React$1.useCallback(async () => {
       try {
         const url = `${BASE_URL}${ENDPOINTS.customers}`;
         const params = new URLSearchParams({
@@ -7091,7 +7091,7 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
         console.error(error);
         setAllCustomers(customersMock);
       }
-    };
+    }, [value]);
     const getCustomerTransaction = async () => {
       try {
         const url = `${BASE_URL}${ENDPOINTS.customerTransactions}`;
@@ -7149,6 +7149,7 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
       }
     }, [kassanummer, transactienummer, kassaBonDatum]);
     React$1.useEffect(() => {
+      console.log('effect');
       getAllCustomers();
     }, []);
     return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
@@ -7162,7 +7163,7 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
         margin: '44px',
         height: '100%'
       }
-    }, /*#__PURE__*/React.createElement("h1", null, "BTW DEMO factuur aanmaken"), /*#__PURE__*/React.createElement("h2", {
+    }, /*#__PURE__*/React.createElement("h1", null, "BTW factuur aanmaken"), /*#__PURE__*/React.createElement("h2", {
       style: heading2Style
     }, "TRANSACTIEGEGEVENS"), /*#__PURE__*/React.createElement("div", {
       style: wrapperStyle
@@ -7297,15 +7298,7 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
       style: inputStyle,
       value: country,
       onChange: e => e.target.value
-    }))), /*#__PURE__*/React.createElement("div", {
-      style: rowStyle
-    }, /*#__PURE__*/React.createElement("p", {
-      style: labelStyle
-    }, "Value from OS input"), /*#__PURE__*/React.createElement("input", {
-      style: inputStyle,
-      value: value,
-      disabled: true
-    }))))), isLoading && /*#__PURE__*/React.createElement(Loader, null));
+    })))))), isLoading && /*#__PURE__*/React.createElement(Loader, null));
   };
 
   exports.BTWfactuur = BTWfactuur;
