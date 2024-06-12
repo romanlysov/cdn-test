@@ -7077,11 +7077,11 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
     const handleTransactienummer = e => {
       setTransactienummer(e.target.value);
     };
-    const getAllCustomers = React$1.useCallback(async () => {
+    const getAllCustomers = async () => {
       try {
         const url = `${BASE_URL}${ENDPOINTS.customers}`;
         const params = new URLSearchParams({
-          storeId: value !== undefined ? value : '4003'
+          storeId: value !== undefined ? value : '3100'
         });
         const response = await fetch(`${url}?${params}`);
         const result = await response.json();
@@ -7091,12 +7091,12 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
         console.error(error);
         setAllCustomers(customersMock);
       }
-    }, [value]);
+    };
     const getCustomerTransaction = async () => {
       try {
         const url = `${BASE_URL}${ENDPOINTS.customerTransactions}`;
         const params = new URLSearchParams({
-          storeId: value !== undefined ? value : '4003',
+          storeId: value !== undefined ? value : '3100',
           date: kassaBonDatum,
           workstationId: kassanummer,
           transactionNumber: transactienummer
@@ -7149,7 +7149,6 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
       }
     }, [kassanummer, transactienummer, kassaBonDatum]);
     React$1.useEffect(() => {
-      console.log('effect');
       getAllCustomers();
     }, []);
     return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
@@ -7163,7 +7162,7 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
         margin: '44px',
         height: '100%'
       }
-    }, /*#__PURE__*/React.createElement("h1", null, "BTW factuur aanmaken"), /*#__PURE__*/React.createElement("h2", {
+    }, /*#__PURE__*/React.createElement("h2", {
       style: heading2Style
     }, "TRANSACTIEGEGEVENS"), /*#__PURE__*/React.createElement("div", {
       style: wrapperStyle
