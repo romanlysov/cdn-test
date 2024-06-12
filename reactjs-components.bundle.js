@@ -7164,7 +7164,7 @@ var ReactJSComponents = (function (exports, React$1, reactDom) {
       }
     }, /*#__PURE__*/React.createElement("h2", {
       style: heading2Style
-    }, "TRANSACTIEGEGEVENS"), /*#__PURE__*/React.createElement("div", {
+    }, "TRANSACTIEGEGEVENS DEMO"), /*#__PURE__*/React.createElement("div", {
       style: wrapperStyle
     }, /*#__PURE__*/React.createElement("div", {
       style: rowStyle
